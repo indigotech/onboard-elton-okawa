@@ -19,8 +19,8 @@ const server = new GraphQLServer({
   typeDefs,
   resolvers,
 })
-server.start(() => console.log(`Server is running on http://localhost:4000`))
+server.start(() => console.info(`Server is running on http://localhost:4000`))
 
 createConnection().then(async connection => {
-  console.log('Connected successfully');
-}).catch(error => console.log(error));
+  console.info('Connected successfully to database');
+}).catch(error => console.error(error));
