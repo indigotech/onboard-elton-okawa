@@ -1,0 +1,1 @@
+export const APP_SECRET = '$UP3R S3CR3T';
