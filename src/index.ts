@@ -2,13 +2,13 @@ const { GraphQLServer } = require('graphql-yoga')
 
 const typeDefs = `
 type Query {
-  info: String!
+  Hello(name: String): String!
 }
 `
 
 const resolvers = {
   Query: {
-    info: () => `This is the API of a Hackernews Clone`
+    Hello: (_, { name }) => name ? `Hello, ${name}!` : 'Hello, world!'
   }
 }
 
