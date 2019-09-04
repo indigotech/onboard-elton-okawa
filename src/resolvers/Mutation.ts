@@ -17,7 +17,7 @@ const Login = async (_, { email, password, rememberMe}, { db }): Promise<AuthPay
   if (!isPasswordCorrect) throw Error('Invalid credentials, please check your e-mail and password');
 
   const expireTimeInSeconds = rememberMe ? 604800 : 3600 // 1 week or 1 hour
-  const token = jwt.sign({ email: email }, APP_SECRET, { expiresIn: expireTimeInSeconds });
+  const token = jwt.sign({ userId: user.id }, APP_SECRET, { expiresIn: expireTimeInSeconds });
 
   return { user: user, token: token } as AuthPayload;
 };
