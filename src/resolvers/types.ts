@@ -7,6 +7,7 @@ export interface AuthPayload {
 
 export interface CreateUserInput {
   name: string;
+  password: string;
   email: string;
   birthDate: string;
   cpf: string;
