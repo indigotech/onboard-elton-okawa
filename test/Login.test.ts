@@ -1,6 +1,7 @@
 import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { expect } from 'chai';
+import * as HttpStatus from 'http-status-codes';
 
 import { User } from '../src/entity/User';
 
@@ -45,11 +46,33 @@ export default function loginTest() {
       expect(cpf).to.be.equals('20020020012');
     });
 
+    it('should return all fields', async function() {
+      const res = await requestLoginMutation(EMAIL, PASSWORD);
+
+      const { user, token } = res.body.data.Login;
+      expect(user.id).not.false;
+      expect(user.name).not.false;
+      expect(user.email).not.false;
+      expect(user.birthDate).not.false;
+      expect(user.cpf).not.false;
+      expect(token).not.false;
+    });
+    
+    it('should rememberBe be optional', async function() {
+      const { request } = this.test.ctx;
+      const res = await request.post('/').send({ 
+        query: `mutation { Login(email: \"${EMAIL}\", password: \"${PASSWORD}\") { user { id name email birthDate cpf } token }}` });
+    
+      const { errors } = res.body;
+      expect(errors).to.be.undefined;
+    });
+
     it('should not found email', async function() {
       const res = await requestLoginMutation('wrongEmail@email.com', PASSWORD);
-
+      
       const { errors } = res.body;
       expect(errors[0].message).to.be.equals('Email not found in database');
+      expect(res.status).to.be.equals(HttpStatus.NOT_FOUND);
     });
 
     it('should not authorize', async function() {
@@ -57,6 +80,7 @@ export default function loginTest() {
 
       const { errors } = res.body;
       expect(errors[0].message).to.be.equals('Invalid credentials, please check your e-mail and password');
+      expect(res.status).to.be.equals(HttpStatus.UNAUTHORIZED);
     });
 
     it('should return token with short lifespan', async function() {

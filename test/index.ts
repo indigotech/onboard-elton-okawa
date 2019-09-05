@@ -3,11 +3,11 @@ import * as dotenv from 'dotenv-flow';
 dotenv.config();
 
 import * as supertest from 'supertest';
-import { expect } from 'chai';
 import { getConnection } from 'typeorm';
 
 import { startServer } from '../src/server';
 import loginTest from './Login.test';
+import helloTest from './Hello.test';
 
 before(async function() {
   await startServer();
@@ -15,16 +15,5 @@ before(async function() {
   this.connection = await getConnection();
 });
 
-describe('Query', function() {
-  describe('Hello', function() {
-    it('should return hello world', function(done) {
-      this.test.ctx.request.post('/').send('{ \"query\": \"{ Hello }\" }').set('content-type', 'application/json').end((err, res) => {
-        if (err) return done(err);
-        expect(res.body.data.Hello).to.be.eq('Hello, world!');
-        done();
-      });
-    });
-  });
-});
-
+describe('Query', helloTest.bind(this));
 describe('Mutation', loginTest.bind(this));
