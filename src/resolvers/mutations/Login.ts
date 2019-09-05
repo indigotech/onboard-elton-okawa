@@ -1,15 +1,11 @@
 import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 
-import { User } from '../entity/User';
-import { APP_SECRET } from '../utils';
+import { APP_SECRET } from '../../utils';
+import { User } from '../../entity/User';
+import { AuthPayload } from '../types';
 
-interface AuthPayload {
-  user: User;
-  token: string;
-}
-
-const Login = async (_, { email, password, rememberMe}, { db }): Promise<AuthPayload> => {
+export const Login = async (_, { email, password, rememberMe}, { db }): Promise<AuthPayload> => {
   const user: User = await db.manager.findOne(User, { email });
   if (!user) { 
     throw Error('Email not found in database'); 
@@ -27,7 +23,3 @@ const Login = async (_, { email, password, rememberMe}, { db }): Promise<AuthPay
 
   return { user, token };
 };
-
-export default {
-  Login,
-}

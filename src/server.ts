@@ -1,8 +1,8 @@
 import { GraphQLServer } from 'graphql-yoga';
 import { createConnection } from 'typeorm';
 
-import Query from './resolvers/Query';
-import Mutation from './resolvers/Mutation';
+import Query from './resolvers/queries';
+import Mutation from './resolvers/mutations';
 
 export const startServer = async () => {
   try {
