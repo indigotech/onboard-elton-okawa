@@ -1,4 +1,7 @@
-const { GraphQLServer } = require('graphql-yoga')
+import 'reflect-metadata';
+import { GraphQLServer } from 'graphql-yoga';
+import { createConnection, Connection } from 'typeorm';
+import { User } from './entity/User';
 
 const typeDefs = `
 type Query {
@@ -16,4 +19,8 @@ const server = new GraphQLServer({
   typeDefs,
   resolvers,
 })
-server.start(() => console.log(`Server is running on http://localhost:4000`))
+
+createConnection().then(async connection => {
+  console.info('Connected successfully to database');
+  server.start(() => console.info(`Server is running on http://localhost:4000`))
+}).catch(error => console.error(error));
