@@ -1,0 +1,20 @@
+type Query {
+  Hello(name: String): String!
+}
+
+type Mutation {
+  Login(email: String!, password: String!, rememberMe: Boolean): AuthPayload!
+}
+
+type AuthPayload {
+  user: User!
+  token: String!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  birthDate: String!
+  cpf: String!
+}
