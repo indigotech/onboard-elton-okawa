@@ -7,24 +7,24 @@ import { User } from '../../entity/User';
 
 export const CreateUser = (_, { user: CreateUserInput }, { request, response }): User => {
   const authorization = request.get('Authorization');
-  if (authorization) {
-    const token = authorization.replace('Bearer ', '');
-    let payload;
-    try {
-      payload = jwt.verify(token, APP_SECRET) as AuthPayload;
-      
-    } catch (error) {
-      response.statusCode = HttpStatusCode.UNAUTHORIZED;
-      throw error;
-    }
-    if (!payload.userId) {
-      response.statusCode = HttpStatusCode.BAD_REQUEST;
-      throw Error('Malformed token payload');
-    }
-
-    return { id: 1, name: 'name', email: 'email', birthDate: new Date(), cpf: '10020030012', password: ''};
+  if (!authorization) {
+    response.statusCode = HttpStatusCode.UNAUTHORIZED;
+    throw Error('Missing Authorization Header');
+  }
+  const token = authorization.replace('Bearer ', '');
+  let payload;
+  
+  try {
+    payload = jwt.verify(token, APP_SECRET) as AuthPayload;
+  } catch (error) {
+    response.statusCode = HttpStatusCode.UNAUTHORIZED;
+    throw error;
   }
 
-  response.statusCode = HttpStatusCode.UNAUTHORIZED;
-  throw Error('Missing Authorization Header');
+  if (!payload.userId) {
+    response.statusCode = HttpStatusCode.BAD_REQUEST;
+    throw Error('Malformed token payload');
+  }
+
+  return { id: 1, name: 'name', email: 'email', birthDate: new Date(), cpf: '10020030012', password: ''};
 }
