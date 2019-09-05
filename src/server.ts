@@ -1,5 +1,5 @@
 import { GraphQLServer } from 'graphql-yoga';
-import { createConnection, Connection} from 'typeorm';
+import { createConnection } from 'typeorm';
 
 import Query from './resolvers/queries';
 import Mutation from './resolvers/mutations';
@@ -15,7 +15,9 @@ export const startServer = async () => {
         Query,
         Mutation,
       },
-      context: { db: connection }
+      context: ({ request, response }) => {
+        return { request, response, db: connection };
+      }
     });
     await server.start();
     console.log(`Server is running on http://localhost:4000`);
