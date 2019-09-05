@@ -10,16 +10,22 @@ interface AuthPayload {
 }
 
 const Login = async (_, { email, password, rememberMe}, { db }): Promise<AuthPayload> => {
-  const user: User = await db.manager.findOne(User, { email: email });
-  if (!user) throw Error('Email not found in database');
+  const user: User = await db.manager.findOne(User, { email });
+  if (!user) { 
+    throw Error('Email not found in database'); 
+  }
 
   const isPasswordCorrect: boolean = await bcryptjs.compare(password, user.password);
-  if (!isPasswordCorrect) throw Error('Invalid credentials, please check your e-mail and password');
+  if (!isPasswordCorrect) { 
+    throw Error('Invalid credentials, please check your e-mail and password');
+  }
 
-  const expireTimeInSeconds = rememberMe ? 604800 : 3600 // 1 week or 1 hour
+  const oneWeek = 604800;
+  const oneHour = 3600;
+  const expireTimeInSeconds = rememberMe ? oneWeek : oneHour;
   const token = jwt.sign({ userId: user.id }, APP_SECRET, { expiresIn: expireTimeInSeconds });
 
-  return { user: user, token: token } as AuthPayload;
+  return { user, token };
 };
 
 export default {

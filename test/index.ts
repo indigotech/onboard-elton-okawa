@@ -5,8 +5,8 @@ import { startServer } from '../src/server';
 
 const request = supertest('http://localhost:4000');
 
-before((done) => {
-  startServer().then(() => done());
+before(async () => {
+  await startServer();
 });
 
 describe('Query', function() {

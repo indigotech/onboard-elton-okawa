@@ -4,9 +4,6 @@
   "description": "* Project's Name Awesome server * Project's Description An awesome learning project * Environment and tools * * Steps to run and debug *",
   "main": "index.js",
   "dependencies": {
-    "@types/bcryptjs": "^2.4.2",
-    "@types/jsonwebtoken": "^8.3.3",
-    "@types/node": "^12.7.3",
     "bcryptjs": "^2.4.3",
     "graphql-yoga": "^1.18.3",
     "jsonwebtoken": "^8.5.1",
@@ -15,7 +12,10 @@
     "typeorm": "^0.2.18"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^8.3.3",
     "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.4",
     "@types/supertest": "^2.0.8",
     "mocha": "^6.2.0",
     "supertest": "^4.0.2",
