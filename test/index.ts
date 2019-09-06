@@ -1,30 +1,28 @@
-import * as assert from 'assert';
+import 'reflect-metadata';
+import * as dotenv from 'dotenv-flow';
+dotenv.config();
+
 import * as supertest from 'supertest';
+import { getConnection } from 'typeorm';
 
 import { startServer } from '../src/server';
 
-const request = supertest('http://localhost:4000');
+let httpServer;
 
-before(async () => {
-  await startServer();
+before(async function() {
+  httpServer = await startServer();
+  this.request = supertest('http://localhost:4000');
 });
 
-describe('Query', function() {
-  describe('Hello', function() {
-    it('should return hello world', function(done) {
-      request.post('/').send('{ \"query\": \"{ Hello }\" }').set('content-type', 'application/json').end((err, res) => {
-        if (err) return done(err);
-        console.log(res.body);
-        done();
-      });
-    });
-  });
+describe('Query', () => {
+ require('./Hello.test'); 
 });
 
-describe('Mutation', function() {
-  describe('Login', function() {
-    it('should return true', function() {
-      assert.ok(true);
-    });
-  });
+describe('Mutation', () => {
+  require('./Login.test');
+});
+
+after(async function() {
+  await getConnection().close();
+  httpServer.close();
 });

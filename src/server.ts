@@ -15,11 +15,13 @@ export const startServer = async () => {
         Query,
         Mutation,
       },
-      context: { db: connection }
+      context: ({ request, response }) => {
+        return { request, response, db: connection };
+      }
     });
-    await server.start();
+    const httpServer = await server.start();
     console.log(`Server is running on http://localhost:4000`);
-
+    return httpServer;
   } catch(error) {
     console.log(error);
   }
