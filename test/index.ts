@@ -24,6 +24,7 @@ describe('Query', () => {
 
 describe('Mutation', () => {
   require('./Login.test');
+  require('./CreateUser.test');
 });
 
 after(async function() {

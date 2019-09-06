@@ -1,10 +1,10 @@
-import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { expect } from 'chai';
 import * as HttpStatus from 'http-status-codes';
 
 import { User } from '../src/entity/User';
 import { getRepository } from 'typeorm';
+import { addDummyUserOnDb } from './addDummyUserOnDb';
 
 describe('Login', function() {
   const PASSWORD = '1234';
@@ -23,14 +23,7 @@ describe('Login', function() {
   });
 
   beforeEach(async function() {
-    const newUser: User = new User();
-    newUser.name = 'name';
-    newUser.email = 'email@email.com';
-    newUser.birthDate = new Date(1286668800000);
-    newUser.cpf = '20020020012';
-    newUser.password = bcryptjs.hashSync('1234');
-
-    savedUser = await this.userRepository.save(newUser);
+    savedUser = await addDummyUserOnDb();
   });
 
   afterEach(async function() {
