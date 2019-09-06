@@ -19,8 +19,9 @@ export const startServer = async () => {
         return { request, response, db: connection };
       }
     });
-    await server.start();
+    const httpServer = await server.start();
     console.log(`Server is running on http://localhost:4000`);
+    return httpServer;
   } catch(error) {
     console.log(error);
   }
