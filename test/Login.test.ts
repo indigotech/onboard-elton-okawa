@@ -51,12 +51,12 @@ describe('Login', function() {
     const res = await requestLoginMutation(savedUser.email, PASSWORD);
     
     const { user, token } = res.body.data.Login;
-    expect(user.id).to.be.ok;
-    expect(user.name).to.be.ok;
-    expect(user.email).to.be.ok;
-    expect(user.birthDate).to.be.ok;
-    expect(user.cpf).to.be.ok;
-    expect(token).to.be.ok;
+    expect(user.id).is.not.empty;
+    expect(user.name).is.not.empty;
+    expect(user.email).is.not.empty;
+    expect(user.birthDate).is.not.empty;
+    expect(user.cpf).is.not.empty;
+    expect(token).is.not.empty;
   });
   
   it('should rememberBe be optional', async function() {
