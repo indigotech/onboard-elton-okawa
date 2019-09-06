@@ -38,9 +38,9 @@ export const CreateUser = async (_, { user }, { request, response, db }): Promis
     const salt = bcryptjs.genSaltSync(10);
     return db.manager.save(User, { ...user, password: bcryptjs.hashSync(user.password, salt) });
   }
-
-  const salt = bcryptjs.genSaltSync(10);
-  return await db.manager.save(User, { ...user, password: bcryptjs.hashSync(user.password, salt) });
+  
+  response.statusCode = HttpStatusCode.UNAUTHORIZED;
+  throw new DetailedError('Missing Authorization Header');
 }
 
 const verifyPassword = (password: string): DetailedError[] => {
