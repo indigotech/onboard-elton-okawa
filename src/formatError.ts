@@ -1,16 +1,15 @@
 import { ErrorPack } from "./ErrorPack";
 import { DetailedError } from "./DetailedError";
 
-export default function(error: { originalError: ErrorPack | DetailedError | Error}) {
+export default function(error: { originalError: ErrorPack | Error }) {
   const formattedError = { ...error };
-  if (error.originalError) {
-
-    if('errors' in error.originalError) {
-      formattedError['details'] = error.originalError.errors
-        .map((detailedError: DetailedError) => detailedError.getMessageParameters());
-    } else if('detailedMessage' in error.originalError) {
-      formattedError['detailedMessage'] = error.originalError.detailedMessage;
-    }
+  
+  if ('errors' in error.originalError) {
+    formattedError['details'] = error.originalError.errors
+      .map((detailedError: DetailedError) => detailedError.getMessageParameters());
+  } else {
+    const message = error.originalError.message;
+    formattedError['details'] = [{ message }];
   }
   return formattedError;
 }

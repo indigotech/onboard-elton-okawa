@@ -14,6 +14,10 @@ before(async function() {
   this.request = supertest('http://localhost:4000');
 });
 
+describe('Unit tests', () => {
+  require('./formatError.test');
+});
+
 describe('Query', () => {
  require('./Hello.test'); 
 });
