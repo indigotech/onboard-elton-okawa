@@ -1,7 +1,7 @@
 import { ErrorPack } from "./ErrorPack";
 import { DetailedError } from "./DetailedError";
 
-export default function(error: { originalError: ErrorPack | Error | null, message: string }) {
+export default function(error: { originalError?: ErrorPack | Error , message: string }) {
   const formattedError = { ...error };
 
   if (error.originalError && 'errors' in error.originalError) {
