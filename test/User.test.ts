@@ -1,11 +1,11 @@
 import * as jwt from 'jsonwebtoken';
 import * as HttpStatusCodes from 'http-status-codes';
 import { expect } from 'chai';
-
-import { addDummyUserOnDb } from "./addDummyUserOnDb";
-import { APP_SECRET } from "../src/utils";
 import { getRepository } from 'typeorm';
-import { UserEntity } from '../src/entity/User.entity';
+
+import { addDummyUserOnDb } from "test/addDummyUserOnDb";
+import { APP_SECRET } from "src/utils";
+import { UserEntity } from 'src/entity/User.entity';
 
 describe('User', function() {
   const ONE_MINUTE = 60;
