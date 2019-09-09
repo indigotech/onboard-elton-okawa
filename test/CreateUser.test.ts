@@ -10,6 +10,8 @@ import { addDummyUserOnDb } from "./addDummyUserOnDb";
 import { APP_SECRET } from '../src/utils';
 
 describe('CreateUser', function() {
+  const ONE_MINUTE = 60;
+
   let newUser = new User();
   newUser.name = "Another User";
   newUser.email = "newemail@email.com";
@@ -46,10 +48,7 @@ describe('CreateUser', function() {
 
   beforeEach(async function() {
     savedUser = await addDummyUserOnDb();
-    const { request } = this.test.ctx;
-    const loginRes = await request.post('/').send({
-      query: `mutation { Login (email: \"${savedUser.email}\", password: \"1234\") { user { id } token }}`});
-    correctToken = loginRes.body.data.Login.token;
+    correctToken = jwt.sign({ userId: savedUser.id }, APP_SECRET, { expiresIn: ONE_MINUTE });
   });
 
   afterEach(async function() {
