@@ -29,6 +29,16 @@ describe('CreateUser', function() {
         }}`}).set('Authorization', token);
   };
 
+  const expectNewUserToBeUndefined = async () => {
+    const dbUser = await this.ctx.userRepository.findOne({ email: newUser.email });
+    expect(dbUser).to.be.undefined;
+  }
+
+  const expectNumberOfUsersToBeOne = async () => {
+    const numberOfUsers = await this.ctx.userRepository.count();
+    expect(numberOfUsers).to.be.equals(1);
+  }
+
   before(function() {
     this.userRepository = getRepository(User);
   });
@@ -79,8 +89,7 @@ describe('CreateUser', function() {
     expect(res.statusCode).to.be.equals(HttpStatusCode.UNAUTHORIZED);
     expect(errors[0].message).to.be.equals('Missing Authorization Header');
 
-    const dbUser = await this.userRepository.findOne({ email: newUser.email });
-    expect(dbUser).to.be.undefined;
+    await expectNewUserToBeUndefined();
   });
 
   it('should not create user because token is expired', async function() {
@@ -93,8 +102,7 @@ describe('CreateUser', function() {
     const { errors } = res.body;
     expect(errors[0].message).to.be.equals('jwt expired');
 
-    const dbUser = await this.userRepository.findOne({ email: newUser.email });
-    expect(dbUser).to.be.undefined;
+    await expectNewUserToBeUndefined();
   });
 
   it('should not create user because of invalid signature', async function() {
@@ -107,8 +115,7 @@ describe('CreateUser', function() {
     const { errors } = res.body;
     expect(errors[0].message).to.be.equals('invalid signature');
 
-    const dbUser = await this.userRepository.findOne({ email: newUser.email });
-    expect(dbUser).to.be.undefined;
+    await expectNewUserToBeUndefined();
   });
 
   it('should not create user because there is no logged userId on token payload', async function() {
@@ -121,7 +128,53 @@ describe('CreateUser', function() {
     const { errors } = res.body;
     expect(errors[0].message).to.be.equals('Malformed token payload');
 
-    const dbUser = await this.userRepository.findOne({ email: newUser.email });
-    expect(dbUser).to.be.undefined;
+    await expectNewUserToBeUndefined();
+  });
+
+  it('should not create user because email is not unique', async function() {
+    const res = await requestCreateUserMutation(savedUser, correctToken);
+
+    expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
+    const { errors } = res.body;
+    expect(errors[0].message).to.be.equals('Validation errors');
+    expect(errors[0].details).to.be.deep.equals([{ message: 'Email already used' }]);
+    
+    await expectNumberOfUsersToBeOne();
+  });
+
+  it('should not create user because password does not have digit', async function() {
+    const wrongUser = { ...newUser, password: 'abcdefgh'};
+    const res = await requestCreateUserMutation(wrongUser, correctToken);
+
+    expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
+    const { errors } = res.body;
+    expect(errors[0].message).to.be.equals('Validation errors');
+    expect(errors[0].details).to.be.deep.equals([{ message: 'Password does not have digit' }]);
+
+    await expectNumberOfUsersToBeOne();
+  });
+
+  it('should not create user because password does not have letter', async function() {
+    const wrongUser = { ...newUser, password: '12345678'};
+    const res = await requestCreateUserMutation(wrongUser, correctToken);
+
+    expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
+    const { errors } = res.body;
+    expect(errors[0].message).to.be.equals('Validation errors');
+    expect(errors[0].details).to.be.deep.equals([{ message: 'Password does not have letter' }]);
+
+    await expectNumberOfUsersToBeOne();
+  });
+
+  it('should not create user because password does not have minimum size', async function() {
+    const wrongUser = { ...newUser, password: 'a1'};
+    const res = await requestCreateUserMutation(wrongUser, correctToken);
+
+    expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
+    const { errors } = res.body;
+    expect(errors[0].message).to.be.equals('Validation errors');
+    expect(errors[0].details).to.be.deep.equals([{ message: 'Password does not have minimum size' }]);
+
+    await expectNumberOfUsersToBeOne();
   });
 });

@@ -32,6 +32,7 @@ export const CreateUser = async (_, { user }, { request, response, db }): Promis
     }
     
     if (errors.length > 0) {
+      response.statusCode = HttpStatusCode.BAD_REQUEST;
       throw new ErrorPack('Validation errors', errors);
     }
 
