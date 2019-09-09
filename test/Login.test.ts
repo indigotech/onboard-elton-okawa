@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import * as HttpStatus from 'http-status-codes';
 
 import * as ErrorMessages from '../src/ErrorMessages';
-import { User } from '../src/entity/User';
+import { UserEntity } from '../src/entity/User.entity';
 import { getRepository } from 'typeorm';
 import { addDummyUserOnDb } from './addDummyUserOnDb';
 
@@ -20,7 +20,7 @@ describe('Login', function() {
   }
 
   before(function() {
-    this.userRepository = getRepository(User);
+    this.userRepository = getRepository(UserEntity);
   });
 
   beforeEach(async function() {
