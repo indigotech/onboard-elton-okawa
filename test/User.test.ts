@@ -64,6 +64,13 @@ describe('User', function() {
     await this.userRepository.delete(anotherUser);
   });
 
+  it('should return null because user with id -1 does not exist', async function() {
+    const res = await requestUserQueryWithToken(-1, correctToken);
+
+    const { User } = res.body.data;
+    expect(User).to.be.null;
+  });
+
   it('should not return user because of missing auth header', async function() {
     const res = await requestUserQuery(savedUser.id);
 
