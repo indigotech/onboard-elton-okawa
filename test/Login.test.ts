@@ -2,6 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import { expect } from 'chai';
 import * as HttpStatus from 'http-status-codes';
 
+import * as ErrorMessages from '../src/ErrorMessages';
 import { User } from '../src/entity/User';
 import { getRepository } from 'typeorm';
 import { addDummyUserOnDb } from './addDummyUserOnDb';
@@ -65,7 +66,7 @@ describe('Login', function() {
     const res = await requestLoginMutation('wrongEmail@email.com', PASSWORD);
     
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('Email not found in database');
+    expect(errors[0].message).to.be.equals(ErrorMessages.EMAIL_NOT_FOUND);
     expect(res.status).to.be.equals(HttpStatus.NOT_FOUND);
   });
 
@@ -73,7 +74,7 @@ describe('Login', function() {
     const res = await requestLoginMutation(savedUser.email, 'wrongPassword');
 
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('Invalid credentials, please check your e-mail and password');
+    expect(errors[0].message).to.be.equals(ErrorMessages.INVALID_CREDENTIALS);
     expect(res.status).to.be.equals(HttpStatus.UNAUTHORIZED);
   });
 

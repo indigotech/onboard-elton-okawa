@@ -4,6 +4,7 @@ import * as HttpStatusCode from 'http-status-codes';
 import { getRepository } from "typeorm";
 import { expect } from 'chai';
 
+import * as ErrorMessages from '../src/ErrorMessages';
 import { User } from "../src/entity/User";
 import { addDummyUserOnDb } from "./addDummyUserOnDb";
 import { APP_SECRET } from '../src/utils';
@@ -52,7 +53,7 @@ describe('CreateUser', function() {
   });
 
   afterEach(async function() {
-    this.userRepository.delete(savedUser);
+    await this.userRepository.delete(savedUser);
   });
 
   it('should authorize and create user', async function() {
@@ -87,7 +88,7 @@ describe('CreateUser', function() {
 
     const { errors } = res.body;
     expect(res.statusCode).to.be.equals(HttpStatusCode.UNAUTHORIZED);
-    expect(errors[0].message).to.be.equals('Missing Authorization Header');
+    expect(errors[0].message).to.be.equals(ErrorMessages.MISSING_AUTH_HEADER);
 
     await expectNewUserToBeUndefined();
   });
@@ -100,7 +101,7 @@ describe('CreateUser', function() {
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.UNAUTHORIZED);
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('jwt expired');
+    expect(errors[0].message).to.be.equals(ErrorMessages.JWT_EXPIRED);
 
     await expectNewUserToBeUndefined();
   });
@@ -113,7 +114,7 @@ describe('CreateUser', function() {
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.UNAUTHORIZED);
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('invalid signature');
+    expect(errors[0].message).to.be.equals(ErrorMessages.JWT_INVALID_SIGNATURE);
 
     await expectNewUserToBeUndefined();
   });
@@ -126,7 +127,7 @@ describe('CreateUser', function() {
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('Malformed token payload');
+    expect(errors[0].message).to.be.equals(ErrorMessages.MALFORMED_TOKEN_PAYLOAD);
 
     await expectNewUserToBeUndefined();
   });
@@ -136,8 +137,8 @@ describe('CreateUser', function() {
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('Validation errors');
-    expect(errors[0].details).to.be.deep.equals([{ message: 'Email already used' }]);
+    expect(errors[0].message).to.be.equals(ErrorMessages.VALIDATION_ERRORS);
+    expect(errors[0].details).to.be.deep.equals([{ message: ErrorMessages.EMAIL_ALREADY_USED }]);
     
     await expectNumberOfUsersToBeOne();
   });
@@ -148,8 +149,8 @@ describe('CreateUser', function() {
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('Validation errors');
-    expect(errors[0].details).to.be.deep.equals([{ message: 'Password does not have digit' }]);
+    expect(errors[0].message).to.be.equals(ErrorMessages.VALIDATION_ERRORS);
+    expect(errors[0].details).to.be.deep.equals([{ message: ErrorMessages.PASSWORD_WITHOUT_DIGIT }]);
 
     await expectNumberOfUsersToBeOne();
   });
@@ -160,8 +161,8 @@ describe('CreateUser', function() {
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('Validation errors');
-    expect(errors[0].details).to.be.deep.equals([{ message: 'Password does not have letter' }]);
+    expect(errors[0].message).to.be.equals(ErrorMessages.VALIDATION_ERRORS);
+    expect(errors[0].details).to.be.deep.equals([{ message: ErrorMessages.PASSWORD_WITHOUT_LETTER }]);
 
     await expectNumberOfUsersToBeOne();
   });
@@ -172,8 +173,8 @@ describe('CreateUser', function() {
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
-    expect(errors[0].message).to.be.equals('Validation errors');
-    expect(errors[0].details).to.be.deep.equals([{ message: 'Password does not have minimum size' }]);
+    expect(errors[0].message).to.be.equals(ErrorMessages.VALIDATION_ERRORS);
+    expect(errors[0].details).to.be.deep.equals([{ message: ErrorMessages.PASSWORD_MINIMUM_SIZE }]);
 
     await expectNumberOfUsersToBeOne();
   });
