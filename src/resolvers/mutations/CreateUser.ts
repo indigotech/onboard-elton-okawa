@@ -2,11 +2,11 @@ import * as jwt from 'jsonwebtoken';
 import * as bcryptjs from 'bcryptjs';
 import * as HttpStatusCode from 'http-status-codes';
 
-import * as ErrorMessages from '../../ErrorMessages';
-import { verifyAuthToken } from '../../utils';
-import { UserEntity } from '../../entity/User.entity';
-import { DetailedError } from '../../DetailedError';
-import { ErrorPack } from '../../ErrorPack';
+import * as ErrorMessages from 'src/ErrorMessages';
+import { verifyAuthToken } from 'src/utils';
+import { UserEntity } from 'src/entity/User.entity';
+import { DetailedError } from 'src/DetailedError';
+import { ErrorPack } from 'src/ErrorPack';
 
 export const CreateUser = async (_, { user }, { request, response, db }): Promise<UserEntity> => {
   const authorization = request.get('Authorization');

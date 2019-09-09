@@ -16,8 +16,8 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
-    "@types/jsonwebtoken": "^8.3.3",
     "@types/chai": "^4.2.1",
+    "@types/jsonwebtoken": "^8.3.3",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.4",
     "@types/supertest": "^2.0.8",
@@ -26,11 +26,12 @@
     "supertest": "^4.0.2",
     "ts-mocha": "^6.0.0",
     "ts-node": "^8.3.0",
+    "tsconfig-paths": "^3.8.0",
     "typescript": "^3.6.2"
   },
   "scripts": {
-    "start": "NODE_ENV=development ts-node src/index.ts",
-    "test": "NODE_ENV=test ts-mocha './test/**/*.ts'"
+    "start": "NODE_ENV=development ts-node -r tsconfig-paths/register src/index.ts",
+    "test": "NODE_ENV=test ts-mocha -r tsconfig-paths/register './test/**/*.ts'"
   },
   "repository": {
     "type": "git",

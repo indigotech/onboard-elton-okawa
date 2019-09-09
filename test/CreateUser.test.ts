@@ -65,7 +65,7 @@ describe('CreateUser', function() {
     expect(email).to.be.equals(newUser.email);
     expect(new Date(birthDate).getTime()).to.be.equals(newUser.birthDate.getTime());
 
-    const dbUser = await this.userRepository.findOne({ id });
+    const dbUser = await this.userRepository.findOne(id);
     expect(dbUser.name).to.be.equals(newUser.name);
     expect(dbUser.cpf).to.be.equals(newUser.cpf);
     expect(dbUser.email).to.be.equals(newUser.email);
