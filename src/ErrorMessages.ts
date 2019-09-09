@@ -1,0 +1,11 @@
+export const MISSING_AUTH_HEADER = 'Missing Authorization Header';
+export const JWT_EXPIRED = 'jwt expired';
+export const JWT_INVALID_SIGNATURE = 'invalid signature';
+export const MALFORMED_TOKEN_PAYLOAD = 'Malformed token payload';
+export const VALIDATION_ERRORS = 'Validation errors';
+export const EMAIL_ALREADY_USED = 'Email already used';
+export const PASSWORD_WITHOUT_DIGIT = 'Password does not have digit';
+export const PASSWORD_WITHOUT_LETTER = 'Password does not have letter';
+export const PASSWORD_MINIMUM_SIZE = 'Password does not have minimum size';
+export const EMAIL_NOT_FOUND = 'Email not found in database';
+export const INVALID_CREDENTIALS = 'Invalid credentials, please check your e-mail and password';

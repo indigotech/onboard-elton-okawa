@@ -35,9 +35,15 @@ describe('formatError', function() {
       expect(formattedError).to.have.deep.property('details', 
         [{ message: ERROR_MESSAGE, detailedMessage: DETAILED_ERROR_MESSAGE}]);    
     });
+
+    it('GraphQLErrors', async function() {
+      const { request } = this.test.ctx;
+      const res = await request.post('/').send({ query: 'wrongQuery'});
+      expect(res.body.errors[0]).to.have.deep.property('details', [{ message: 'Syntax Error: Unexpected Name \"wrongQuery\"'}]);
+    });
   });
 });
 
 const getFormattedError = (error: Error) => {
-  return formatError({ originalError: error });
+  return formatError({ originalError: error, message: 'error'});
 }
