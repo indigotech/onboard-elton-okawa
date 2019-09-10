@@ -2,7 +2,9 @@ import * as jwt from 'jsonwebtoken';
 import * as HttpStatusCodes from 'http-status-codes';
 import { expect } from 'chai';
 import { getRepository } from 'typeorm';
+import gql from 'graphql-tag';
 
+import { requestGraphQL, requestGraphQLWithToken } from 'test/requestGraphQL';
 import { addDummyUserOnDb } from "test/addDummyUserOnDb";
 import { APP_SECRET } from "src/utils";
 import { UserEntity } from 'src/entity/User.entity';
@@ -13,15 +15,27 @@ describe('User', function() {
   let savedUser;
   let correctToken;
 
+  const getUserQuery = (id: number) => {
+    return gql`
+      { 
+        User(id: ${id}) { 
+          id 
+          name 
+          email 
+          birthDate 
+          cpf 
+        }
+      }`;
+  }
+
   const requestUserQueryWithToken = (id: number, token: string) => {
-    const { request } = this.ctx;
-    return request.post('/').send({ query: `{ User(id: ${id}) { id name email birthDate cpf }}`})
-      .set('Authorization', token);
+    const query = getUserQuery(id);
+    return requestGraphQLWithToken(this.ctx.request, query, token);
   };
     
   const requestUserQuery = (id: number) => {
-    const { request } = this.ctx;
-    return request.post('/').send({ query: `{ User(id: ${id}) { id name email birthDate cpf }}`});
+    const query = getUserQuery(id);
+    return requestGraphQL(this.ctx.request, query);
   };
 
   before(function() {
