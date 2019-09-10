@@ -3,11 +3,13 @@ import * as jwt from 'jsonwebtoken';
 import * as HttpStatusCode from 'http-status-codes';
 import { getRepository } from "typeorm";
 import { expect } from 'chai';
+import gql from 'graphql-tag';
 
-import * as ErrorMessages from '../src/ErrorMessages';
-import { UserEntity } from "../src/entity/User.entity";
-import { addDummyUserOnDb } from "./addDummyUserOnDb";
-import { APP_SECRET } from '../src/utils';
+import * as ErrorMessages from 'src/ErrorMessages';
+import { requestGraphQL, requestGraphQLWithToken } from 'test/requestGraphQL';
+import { UserEntity } from "src/entity/User.entity";
+import { addDummyUserOnDb } from "test/addDummyUserOnDb";
+import { APP_SECRET } from 'src/utils';
 
 describe('CreateUser', function() {
   const ONE_MINUTE = 60;
@@ -22,15 +24,33 @@ describe('CreateUser', function() {
   let savedUser;
   let correctToken;
 
-  const requestCreateUserMutation = async (user: UserEntity, token: string) => {
-    const { request } = this.ctx;
-    return request.post('/').send({
-      query: `mutation { \
-        CreateUser( user: { name: \"${user.name}\", email: \"${user.email}\", \
-          password: \"${user.password}\", cpf: \"${user.cpf}\", birthDate: \"${user.birthDate}\"}) {\
-          id name cpf email birthDate \
-        }}`}).set('Authorization', token);
+  const getCreateUserMutation = (user: UserEntity) => {
+    return gql`
+      mutation {
+        CreateUser( user: {
+          name: "${user.name}", 
+          email: "${user.email}", 
+          password: "${user.password}", 
+          cpf: "${user.cpf}", 
+          birthDate: "${user.birthDate}"}) {
+
+          id 
+          name 
+          cpf 
+          email 
+          birthDate 
+      }}`;
   };
+
+  const requestCreateUserMutationWithToken = (user: UserEntity, token: string) => {
+    const query = getCreateUserMutation(user);
+    return requestGraphQLWithToken(this.ctx.request, query, token);
+  };
+
+  const requestCreateUserMutation = (user: UserEntity) => {
+    const query = getCreateUserMutation(user);
+    return requestGraphQL(this.ctx.request, query);
+  }
 
   const expectNewUserToBeUndefined = async () => {
     const dbUser = await this.ctx.userRepository.findOne({ email: newUser.email });
@@ -56,7 +76,7 @@ describe('CreateUser', function() {
   });
 
   it('should authorize and create user', async function() {
-    const res = await requestCreateUserMutation(newUser, correctToken);
+    const res = await requestCreateUserMutationWithToken(newUser, correctToken);
         
     const { id, name, cpf, email, birthDate } = res.body.data.CreateUser;
     expect(id).to.not.be.empty;
@@ -77,13 +97,7 @@ describe('CreateUser', function() {
   }); 
 
   it('should not create user because there is no Authorization header', async function() {
-    const { request } = this.test.ctx;
-    const res = await request.post('/').send({
-      query: `mutation { \
-        CreateUser( user: { name: \"${newUser.name}\", email: \"${newUser.email}\", \
-          password: \"${newUser.password}\", cpf: \"${newUser.cpf}\", birthDate: \"${newUser.birthDate}\"}) {\
-          id name cpf email birthDate \
-        }}`});
+    const res = await requestCreateUserMutation(newUser);
 
     const { errors } = res.body;
     expect(res.statusCode).to.be.equals(HttpStatusCode.UNAUTHORIZED);
@@ -96,7 +110,7 @@ describe('CreateUser', function() {
     const payload = jwt.verify(correctToken, APP_SECRET) as { userId: number, iat: number, exp: number };
     const expiredToken = jwt.sign({ ...payload, iat: 100, exp: 200 }, APP_SECRET);
 
-    const res = await requestCreateUserMutation(newUser, expiredToken);
+    const res = await requestCreateUserMutationWithToken(newUser, expiredToken);
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.UNAUTHORIZED);
     const { errors } = res.body;
@@ -109,7 +123,7 @@ describe('CreateUser', function() {
     const payload = jwt.verify(correctToken, APP_SECRET) as { userId: number, iat: number, exp: number };
     const invalidSignatureToken = jwt.sign({ ...payload }, 'wrong signature');
 
-    const res = await requestCreateUserMutation(newUser, invalidSignatureToken);
+    const res = await requestCreateUserMutationWithToken(newUser, invalidSignatureToken);
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.UNAUTHORIZED);
     const { errors } = res.body;
@@ -122,7 +136,7 @@ describe('CreateUser', function() {
     const payload = jwt.verify(correctToken, APP_SECRET) as { userId: number, iat: number, exp: number };
     const tokenWithoutUserId = jwt.sign({ ...payload, userId: undefined }, APP_SECRET);
 
-    const res = await requestCreateUserMutation(newUser, tokenWithoutUserId);
+    const res = await requestCreateUserMutationWithToken(newUser, tokenWithoutUserId);
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
@@ -132,7 +146,7 @@ describe('CreateUser', function() {
   });
 
   it('should not create user because email is not unique', async function() {
-    const res = await requestCreateUserMutation(savedUser, correctToken);
+    const res = await requestCreateUserMutationWithToken(savedUser, correctToken);
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
@@ -144,7 +158,7 @@ describe('CreateUser', function() {
 
   it('should not create user because password does not have digit', async function() {
     const wrongUser = { ...newUser, password: 'abcdefgh'};
-    const res = await requestCreateUserMutation(wrongUser, correctToken);
+    const res = await requestCreateUserMutationWithToken(wrongUser, correctToken);
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
@@ -156,7 +170,7 @@ describe('CreateUser', function() {
 
   it('should not create user because password does not have letter', async function() {
     const wrongUser = { ...newUser, password: '12345678'};
-    const res = await requestCreateUserMutation(wrongUser, correctToken);
+    const res = await requestCreateUserMutationWithToken(wrongUser, correctToken);
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
@@ -168,7 +182,7 @@ describe('CreateUser', function() {
 
   it('should not create user because password does not have minimum size', async function() {
     const wrongUser = { ...newUser, password: 'a1'};
-    const res = await requestCreateUserMutation(wrongUser, correctToken);
+    const res = await requestCreateUserMutationWithToken(wrongUser, correctToken);
 
     expect(res.statusCode).to.be.equals(HttpStatusCode.BAD_REQUEST);
     const { errors } = res.body;
