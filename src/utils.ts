@@ -8,7 +8,7 @@ import { defaultFieldResolver } from 'graphql';
 
 export const APP_SECRET = '$UP3R S3CR3T';
 
-const verifyAuthToken = (authorization: string | null, response: { statusCode: number }): void => {
+export const verifyAuthToken = (authorization: string | null, response: { statusCode: number }): void => {
   if (authorization) {
     const token = authorization.replace('Bearer ', '');
     let payload;
