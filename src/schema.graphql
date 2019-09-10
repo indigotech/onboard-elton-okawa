@@ -3,6 +3,7 @@ directive @isAuth on FIELD_DEFINITION
 type Query {
   Hello(name: String): String!
   User(id: ID!): User @isAuth
+  Users(limit: Int): [User!]! @isAuth
 }
 
 type Mutation {
