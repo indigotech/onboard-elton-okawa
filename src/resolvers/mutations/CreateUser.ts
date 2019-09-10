@@ -9,9 +9,6 @@ import { DetailedError } from 'src/DetailedError';
 import { ErrorPack } from 'src/ErrorPack';
 
 export const CreateUser = async (_, { user }, { request, response, db }): Promise<UserEntity> => {
-  const authorization = request.get('Authorization');
-  verifyAuthToken(authorization, response);
-
   let errors: DetailedError[] = verifyPassword(user.password);
   const isEmailUnique = !(await db.manager.findOne(UserEntity, { email: user.email }));
   if (!isEmailUnique) {
