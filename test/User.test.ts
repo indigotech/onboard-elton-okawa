@@ -55,10 +55,10 @@ describe('User', function() {
     const res = await requestUserQueryWithToken(savedUser.id, correctToken);
     
     const { id, name, email, birthDate, cpf, password } = res.body.data.User;
-    expect(Number.parseInt(id)).to.be.equals(savedUser.id);
+    expect(+id).to.be.equals(savedUser.id);
     expect(name).to.be.equals(savedUser.name);
     expect(email).to.be.equals(savedUser.email);
-    expect(Number.parseInt(birthDate)).to.be.equals(new Date(savedUser.birthDate).getTime());
+    expect(+birthDate).to.be.equals(new Date(savedUser.birthDate).getTime());
     expect(cpf).to.be.equals(savedUser.cpf);
     expect(password).to.be.undefined;
   });
@@ -68,10 +68,10 @@ describe('User', function() {
     const res = await requestUserQueryWithToken(anotherUser.id, correctToken);
     
     const { id, name, email, birthDate, cpf, password } = res.body.data.User;
-    expect(Number.parseInt(id)).to.be.equals(anotherUser.id);
+    expect(+id).to.be.equals(anotherUser.id);
     expect(name).to.be.equals(anotherUser.name);
     expect(email).to.be.equals(anotherUser.email);
-    expect(Number.parseInt(birthDate)).to.be.equals(new Date(anotherUser.birthDate).getTime());
+    expect(+birthDate).to.be.equals(new Date(anotherUser.birthDate).getTime());
     expect(cpf).to.be.equals(anotherUser.cpf);
     expect(password).to.be.undefined;
 
