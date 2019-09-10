@@ -2,21 +2,17 @@ import 'reflect-metadata';
 import * as dotenv from 'dotenv-flow';
 dotenv.config();
 
-import { getConnection } from 'typeorm';
+import { getConnection, createConnection } from 'typeorm';
 
-import { startServer } from 'src/server';
 import { addManyDummyUsersOnDb } from 'test/addDummyUserOnDb';
 import { UserEntity } from 'src/entity/User.entity';
 
 const NUMBER_OF_USERS = 50;
 
 const performSeed = async () => {
-  let httpServer = await startServer();
-
+  await createConnection();
   await populateUsers();
-
   await getConnection().close();
-  httpServer.close();
 };
 
 const populateUsers = async () => {
