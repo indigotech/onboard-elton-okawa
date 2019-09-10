@@ -1,11 +1,13 @@
 import * as jwt from 'jsonwebtoken';
 import { expect } from 'chai';
 import * as HttpStatus from 'http-status-codes';
-
-import * as ErrorMessages from '../src/ErrorMessages';
-import { UserEntity } from '../src/entity/User.entity';
 import { getRepository } from 'typeorm';
-import { addDummyUserOnDb } from './addDummyUserOnDb';
+import gql from 'graphql-tag';
+
+import { requestGraphQL } from 'test/requestGraphQL';
+import * as ErrorMessages from 'src/ErrorMessages';
+import { UserEntity } from 'src/entity/User.entity';
+import { addDummyUserOnDb } from 'test/addDummyUserOnDb';
 
 describe('Login', function() {
   const PASSWORD = '1234';
@@ -13,11 +15,44 @@ describe('Login', function() {
   const ONE_WEEK = 604800;
   let savedUser;
 
-  const requestLoginMutation = async (email: string, password: string, rememberMe: boolean = false) => {
-    const { request } = this.ctx;
-    return await request.post('/').send({ 
-      query: `mutation { Login(email: \"${email}\", password: \"${password}\", rememberMe: ${rememberMe}) { user { id name email birthDate cpf } token }}` });
-  }
+  const requestLoginMutation = (email: string, password: string, rememberMe: boolean = false) => {
+    const query = gql`
+      mutation { 
+        Login(
+          email: "${email}", 
+          password: "${password}", 
+          rememberMe: ${rememberMe}) { 
+    
+            user { 
+              id 
+              name 
+              email 
+              birthDate 
+              cpf } 
+            token 
+        }
+    }`;
+    return requestGraphQL(this.ctx.request, query);
+  };
+
+  const requestLoginMutationWithoutRememberMe = (email: string, password: string) => {
+    const query = gql`
+    mutation { 
+      Login(
+        email: "${email}", 
+        password: "${password}") { 
+  
+          user { 
+            id 
+            name 
+            email 
+            birthDate 
+            cpf } 
+          token 
+      }
+    }`;
+    return requestGraphQL(this.ctx.request, query);
+  };
 
   before(function() {
     this.userRepository = getRepository(UserEntity);
@@ -54,10 +89,7 @@ describe('Login', function() {
   });
   
   it('should rememberBe be optional', async function() {
-    const { request } = this.test.ctx;
-    const res = await request.post('/').send({ 
-      query: `mutation { Login(email: \"${savedUser.email}\", password: \"${PASSWORD}\") { user { id name email birthDate cpf } token }}` });
-  
+    const res = await requestLoginMutationWithoutRememberMe(savedUser.email, PASSWORD);
     const { errors } = res.body;
     expect(errors).to.be.undefined;
   });
