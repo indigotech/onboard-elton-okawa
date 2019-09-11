@@ -22,6 +22,7 @@ describe('Unit tests', () => {
 describe('Query', () => {
  require('./Hello.test'); 
  require('./User.test');
+ require('./Users.test');
 });
 
 describe('Mutation', () => {

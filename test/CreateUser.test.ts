@@ -24,16 +24,10 @@ describe('CreateUser', function() {
   let savedUser;
   let correctToken;
 
-  const getCreateUserMutation = (user: UserEntity) => {
+  const getCreateUserMutation = () => {
     return gql`
-      mutation {
-        CreateUser( user: {
-          name: "${user.name}", 
-          email: "${user.email}", 
-          password: "${user.password}", 
-          cpf: "${user.cpf}", 
-          birthDate: "${user.birthDate}"}) {
-
+      mutation CreateUser($user: CreateUserInput!) {
+        CreateUser(user: $user) {
           id 
           name 
           cpf 
@@ -41,15 +35,17 @@ describe('CreateUser', function() {
           birthDate 
       }}`;
   };
-
-  const requestCreateUserMutationWithToken = (user: UserEntity, token: string) => {
-    const query = getCreateUserMutation(user);
-    return requestGraphQLWithToken(this.ctx.request, query, token);
+``
+  const requestCreateUserMutationWithToken = (userEntity: UserEntity, token: string) => {
+    const query = getCreateUserMutation();
+    const user = { ...userEntity, id: undefined }; 
+    return requestGraphQLWithToken(this.ctx.request, { query, variables: { user }}, token);
   };
 
-  const requestCreateUserMutation = (user: UserEntity) => {
-    const query = getCreateUserMutation(user);
-    return requestGraphQL(this.ctx.request, query);
+  const requestCreateUserMutation = (userEntity: UserEntity) => {
+    const query = getCreateUserMutation();
+    const user = { ...userEntity, id: undefined };
+    return requestGraphQL(this.ctx.request, { query, variables: { user }});
   }
 
   const expectNewUserToBeUndefined = async () => {
@@ -77,7 +73,7 @@ describe('CreateUser', function() {
 
   it('should authorize and create user', async function() {
     const res = await requestCreateUserMutationWithToken(newUser, correctToken);
-        
+
     const { id, name, cpf, email, birthDate } = res.body.data.CreateUser;
     expect(id).to.not.be.empty;
     expect(name).to.be.equals(newUser.name);
