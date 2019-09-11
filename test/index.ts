@@ -16,10 +16,12 @@ before(async function() {
 
 describe('Unit tests', () => {
   require('./formatError.test');
+  require('./verifyAuthToken.test');
 });
 
 describe('Query', () => {
  require('./Hello.test'); 
+ require('./User.test');
 });
 
 describe('Mutation', () => {
