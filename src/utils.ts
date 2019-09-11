@@ -1,8 +1,8 @@
 import * as jwt from 'jsonwebtoken';
 import * as HttpStatusCode from 'http-status-codes';
 
-import { AuthPayload } from './resolvers/types';
-import { DetailedError } from './DetailedError';
+import { AuthPayload } from 'src/resolvers/types';
+import { DetailedError } from 'src/DetailedError';
 import { SchemaDirectiveVisitor } from 'graphql-tools';
 import { defaultFieldResolver } from 'graphql';
 

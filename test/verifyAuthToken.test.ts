@@ -2,8 +2,8 @@ import * as HttpStatusCode from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
 import { expect } from 'chai';
 
-import * as ErrorMessages from '../src/ErrorMessages';
-import { verifyAuthToken, APP_SECRET } from "../src/utils";
+import * as ErrorMessages from 'src/ErrorMessages';
+import { verifyAuthToken, APP_SECRET } from "src/utils";
 
 describe('verifyAuthToken', function() {
 

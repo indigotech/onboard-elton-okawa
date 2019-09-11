@@ -1,9 +1,9 @@
 import * as jwt from 'jsonwebtoken';
 import { expect } from 'chai';
 
-import formatError from '../src/formatError';
-import { DetailedError } from '../src/DetailedError';
-import { ErrorPack } from '../src/ErrorPack';
+import formatError from 'src/formatError';
+import { DetailedError } from 'src/DetailedError';
+import { ErrorPack } from 'src/ErrorPack';
 describe('formatError', function() {
   describe('should always return the same response format for:', function() {
     const ERROR_MESSAGE = 'Error message';

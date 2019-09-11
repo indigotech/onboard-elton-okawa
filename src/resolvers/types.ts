@@ -1,4 +1,4 @@
-import { UserEntity } from '../entity/User.entity';
+import { UserEntity } from 'src/entity/User.entity';
 
 export interface AuthPayload {
   user: UserEntity;

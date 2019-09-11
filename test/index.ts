@@ -5,7 +5,7 @@ dotenv.config();
 import * as supertest from 'supertest';
 import { getConnection } from 'typeorm';
 
-import { startServer } from '../src/server';
+import { startServer } from 'src/server';
 
 let httpServer;
 

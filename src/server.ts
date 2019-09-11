@@ -2,14 +2,14 @@ import { GraphQLServer } from 'graphql-yoga';
 import { createConnection } from 'typeorm';
 
 import { IsAuthDirective } from 'src/utils';
-import formatError from './formatError';
-import Query from './resolvers/queries';
-import Mutation from './resolvers/mutations';
+import formatError from 'src/formatError';
+import Query from 'src/resolvers/queries';
+import Mutation from 'src/resolvers/mutations';
 
 export const startServer = async () => {
   try {
     const connection = await createConnection();
-    console.log('Connected successfully');
+    console.info('Connected successfully');
     
     const server = new GraphQLServer({
       typeDefs: './src/schema.graphql',
@@ -25,9 +25,9 @@ export const startServer = async () => {
       },
     });
     const httpServer = await server.start({ formatError });
-    console.log(`Server is running on http://localhost:4000`);
+    console.info(`Server is running on http://localhost:4000`);
     return httpServer;
   } catch(error) {
-    console.log(error);
+    console.error(error);
   }
 }

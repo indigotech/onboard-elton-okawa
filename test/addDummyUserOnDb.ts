@@ -1,9 +1,9 @@
 import * as bcryptjs from 'bcryptjs';
 import * as faker from 'faker';
 import * as cpf from 'cpf';
-
-import { UserEntity } from "../src/entity/User.entity";
 import { getRepository } from 'typeorm';
+
+import { UserEntity } from "src/entity/User.entity";
 
 export const addDummyUserOnDb = async (): Promise<UserEntity> => {
   const newUser: UserEntity = getDummyUser();
