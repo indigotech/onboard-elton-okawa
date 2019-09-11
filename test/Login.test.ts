@@ -15,13 +15,13 @@ describe('Login', function() {
   const ONE_WEEK = 604800;
   let savedUser;
 
-  const requestLoginMutation = (email: string, password: string, rememberMe: boolean = false) => {
+  const requestLoginMutation = (variables: { email: string, password: string, rememberMe?: boolean}) => {
     const query = gql`
-      mutation { 
+      mutation Login($email: String!, $password: String!, $rememberMe: Boolean) { 
         Login(
-          email: "${email}", 
-          password: "${password}", 
-          rememberMe: ${rememberMe}) { 
+          email: $email, 
+          password: $password, 
+          rememberMe: $rememberMe) { 
     
             user { 
               id 
@@ -32,26 +32,7 @@ describe('Login', function() {
             token 
         }
     }`;
-    return requestGraphQL(this.ctx.request, query);
-  };
-
-  const requestLoginMutationWithoutRememberMe = (email: string, password: string) => {
-    const query = gql`
-    mutation { 
-      Login(
-        email: "${email}", 
-        password: "${password}") { 
-  
-          user { 
-            id 
-            name 
-            email 
-            birthDate 
-            cpf } 
-          token 
-      }
-    }`;
-    return requestGraphQL(this.ctx.request, query);
+    return requestGraphQL(this.ctx.request, { query, variables });
   };
 
   before(function() {
@@ -67,7 +48,7 @@ describe('Login', function() {
   });
 
   it('should login successfully', async function() {
-    const res = await requestLoginMutation(savedUser.email, PASSWORD);
+    const res = await requestLoginMutation({ email: savedUser.email, password: PASSWORD });
 
     const { name, email, birthDate, cpf } = res.body.data.Login.user;
     expect(name).to.be.equals(savedUser.name);
@@ -77,7 +58,7 @@ describe('Login', function() {
   });
 
   it('should return all fields', async function() {
-    const res = await requestLoginMutation(savedUser.email, PASSWORD);
+    const res = await requestLoginMutation({ email: savedUser.email, password: PASSWORD });
     
     const { user, token } = res.body.data.Login;
     expect(user.id).is.not.empty;
@@ -89,13 +70,13 @@ describe('Login', function() {
   });
   
   it('should rememberBe be optional', async function() {
-    const res = await requestLoginMutationWithoutRememberMe(savedUser.email, PASSWORD);
+    const res = await requestLoginMutation({ email: savedUser.email, password: PASSWORD });
     const { errors } = res.body;
     expect(errors).to.be.undefined;
   });
 
   it('should return not found error', async function() {
-    const res = await requestLoginMutation('wrongEmail@email.com', PASSWORD);
+    const res = await requestLoginMutation({ email: 'wrongEmail@email.com', password: PASSWORD });
     
     const { errors } = res.body;
     expect(errors[0].message).to.be.equals(ErrorMessages.EMAIL_NOT_FOUND);
@@ -103,7 +84,7 @@ describe('Login', function() {
   });
 
   it('should not authorize if password is wrong', async function() {
-    const res = await requestLoginMutation(savedUser.email, 'wrongPassword');
+    const res = await requestLoginMutation({ email: savedUser.email, password: 'wrongPassword' });
 
     const { errors } = res.body;
     expect(errors[0].message).to.be.equals(ErrorMessages.INVALID_CREDENTIALS);
@@ -111,7 +92,7 @@ describe('Login', function() {
   });
 
   it('should return token with short lifespan', async function() {
-    const res = await requestLoginMutation(savedUser.email, PASSWORD, false);
+    const res = await requestLoginMutation({ email: savedUser.email, password: PASSWORD, rememberMe: false });
     const { token } = res.body.data.Login;
     const payload = jwt.decode(token) as { [key: string]: number};
 
@@ -119,7 +100,7 @@ describe('Login', function() {
   });
 
   it('should return token with long lifespan', async function() {
-    const res = await requestLoginMutation(savedUser.email, PASSWORD, true);
+    const res = await requestLoginMutation({ email: savedUser.email, password: PASSWORD, rememberMe: true });
     const { token } = res.body.data.Login;
     const payload = jwt.decode(token) as { [key: string]: number};
 

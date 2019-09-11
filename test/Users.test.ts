@@ -16,17 +16,10 @@ describe('Users', function() {
   let graphQLFormatUsers;
   let correctToken;
 
-  const getUsersQueryParameters = (args: { limit?: number, offset?: number }) => {
-    let parameters = '';
-    parameters += args.limit ? `limit: ${args.limit}` : '';
-    parameters += args.offset ? `offset: ${args.offset}` : '';
-    return parameters ? `(${parameters})` : '';
-  }
-
-  const getUsersQuery = (args: { limit?: number, offset?: number }) => {
+  const getUsersQuery = () => {
     return gql`
-      { 
-        Users${getUsersQueryParameters(args)} {
+      query Users($limit: Int, $offset: Int) { 
+        Users(limit: $limit, offset: $offset) {
           totalCount
           users {
             id
@@ -44,14 +37,14 @@ describe('Users', function() {
     `
   };
 
-  const requestUsersQuery = (args: { limit?: number, offset?: number }) => {
-    const query = getUsersQuery(args);
-    return requestGraphQL(this.ctx.request, query);
+  const requestUsersQuery = (variables: { limit?: number, offset?: number }) => {
+    const query = getUsersQuery();
+    return requestGraphQL(this.ctx.request, { query, variables });
   };
 
-  const requestUsersQueryWithToken = (args: { limit?: number, offset?: number }, token) => {
-    const query = getUsersQuery(args);
-    return requestGraphQLWithToken(this.ctx.request, query, token);
+  const requestUsersQueryWithToken = (variables: { limit?: number, offset?: number }, token) => {
+    const query = getUsersQuery();
+    return requestGraphQLWithToken(this.ctx.request, { query, variables }, token);
   };
 
   before(function() {
@@ -152,7 +145,7 @@ describe('Users', function() {
     expect(errors[0].details).to.be.deep.equals([{ message: ErrorMessages.OFFSET_NEGATIVE }]);
   });
   
-  it('limit should be optional and return five users by default', async function() {
+  it('should return five users by default because limit is optional', async function() {
     const res = await requestUsersQueryWithToken({ offset: 0 }, correctToken);
 
     const { totalCount, users, pageInfo } = res.body.data.Users;
@@ -161,7 +154,7 @@ describe('Users', function() {
     expect(pageInfo).to.be.deep.equals({ hasPreviousPage: false, hasNextPage: true });
   });
 
-  it('offset should be optional and return starting of zero by default', async function() {
+  it('should return starting of zero by default because offset is optional', async function() {
     const res = await requestUsersQueryWithToken({ limit: 5 }, correctToken);
 
     const { totalCount, users, pageInfo } = res.body.data.Users;

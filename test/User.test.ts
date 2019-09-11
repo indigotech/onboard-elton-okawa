@@ -15,10 +15,10 @@ describe('User', function() {
   let savedUser;
   let correctToken;
 
-  const getUserQuery = (id: number) => {
+  const getUserQuery = () => {
     return gql`
-      { 
-        User(id: ${id}) { 
+      query User ($id: ID!) { 
+        User(id: $id) { 
           id 
           name 
           email 
@@ -29,13 +29,13 @@ describe('User', function() {
   }
 
   const requestUserQueryWithToken = (id: number, token: string) => {
-    const query = getUserQuery(id);
-    return requestGraphQLWithToken(this.ctx.request, query, token);
+    const query = getUserQuery();
+    return requestGraphQLWithToken(this.ctx.request, { query, variables: { id } }, token);
   };
     
   const requestUserQuery = (id: number) => {
-    const query = getUserQuery(id);
-    return requestGraphQL(this.ctx.request, query);
+    const query = getUserQuery();
+    return requestGraphQL(this.ctx.request, { query, variables: { id } });
   };
 
   before(function() {
@@ -53,7 +53,7 @@ describe('User', function() {
 
   it('should return own user data', async function() {
     const res = await requestUserQueryWithToken(savedUser.id, correctToken);
-    
+
     const { id, name, email, birthDate, cpf, password } = res.body.data.User;
     expect(+id).to.be.equals(savedUser.id);
     expect(name).to.be.equals(savedUser.name);
