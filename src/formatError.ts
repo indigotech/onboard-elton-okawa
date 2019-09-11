@@ -1,5 +1,5 @@
-import { ErrorPack } from "./ErrorPack";
-import { DetailedError } from "./DetailedError";
+import { ErrorPack } from "src/ErrorPack";
+import { DetailedError } from "src/DetailedError";
 
 export default function(error: { originalError?: ErrorPack | Error , message: string }) {
   const formattedError = { ...error };

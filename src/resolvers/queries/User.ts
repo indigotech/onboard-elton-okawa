@@ -1,4 +1,4 @@
-import { UserEntity } from '../../entity/User.entity';
+import { UserEntity } from 'src/entity/User.entity';
 import { getRepository } from 'typeorm';
 
 export const User = (_, { id }, { request, response }): Promise<UserEntity> => {

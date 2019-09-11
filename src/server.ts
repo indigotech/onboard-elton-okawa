@@ -2,9 +2,9 @@ import { GraphQLServer } from 'graphql-yoga';
 import { createConnection } from 'typeorm';
 
 import { IsAuthDirective } from 'src/utils';
-import formatError from './formatError';
-import Query from './resolvers/queries';
-import Mutation from './resolvers/mutations';
+import formatError from 'src/formatError';
+import Query from 'src/resolvers/queries';
+import Mutation from 'src/resolvers/mutations';
 
 export const startServer = async () => {
   try {

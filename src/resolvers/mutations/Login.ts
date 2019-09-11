@@ -2,10 +2,10 @@ import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import * as HttpStatus from 'http-status-codes';
 
-import * as ErrorMessages from '../../ErrorMessages';
-import { APP_SECRET } from '../../utils';
-import { UserEntity } from '../../entity/User.entity';
-import { AuthPayload } from '../types';
+import * as ErrorMessages from 'src/ErrorMessages';
+import { APP_SECRET } from 'src/utils';
+import { UserEntity } from 'src/entity/User.entity';
+import { AuthPayload } from 'src/resolvers/types';
 
 export const Login = async (_, { email, password, rememberMe}, { response, db }): Promise<AuthPayload> => {
   const user: UserEntity = await db.manager.findOne(UserEntity, { email });

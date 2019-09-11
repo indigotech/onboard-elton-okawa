@@ -1,4 +1,4 @@
-import { DetailedError } from "./DetailedError";
+import { DetailedError } from "src/DetailedError";
 
 export class ErrorPack extends Error {
   errors: DetailedError[];
