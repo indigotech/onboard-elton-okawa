@@ -35,7 +35,8 @@
   },
   "scripts": {
     "start": "NODE_ENV=development ts-node -r tsconfig-paths/register src/index.ts",
-    "test": "NODE_ENV=test ts-mocha -r tsconfig-paths/register './test/**/*.ts'"
+    "test": "NODE_ENV=test ts-mocha -r tsconfig-paths/register './test/**/*.ts'",
+    "seeds": "NODE_ENV=test ts-node -r tsconfig-paths/register src/seeds.ts"
   },
   "repository": {
     "type": "git",
