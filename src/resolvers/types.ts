@@ -12,3 +12,14 @@ export interface CreateUserInput {
   birthDate: string;
   cpf: string;
 }
+
+export interface UserPage {
+  totalCount: number;
+  users: UserEntity[];
+  pageInfo: PageInfo;
+}
+
+export interface PageInfo {
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
