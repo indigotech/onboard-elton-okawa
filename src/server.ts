@@ -1,25 +1,26 @@
 import { GraphQLServer } from 'graphql-yoga';
 import { createConnection } from 'typeorm';
+import { buildSchema } from 'type-graphql';
 
-import { IsAuthDirective } from 'src/utils';
+import { authChecker } from 'src/utils';
 import formatError from 'src/formatError';
 import Query from 'src/resolvers/queries';
 import Mutation from 'src/resolvers/mutations';
+
 
 export const startServer = async () => {
   try {
     const connection = await createConnection();
     console.info('Connected successfully');
     
+    const schema = await buildSchema({
+      resolvers: [ ...Query, ...Mutation ],
+      authChecker,
+      validate: false,
+    });
+
     const server = new GraphQLServer({
-      typeDefs: './src/schema.graphql',
-      schemaDirectives: {
-        isAuth: IsAuthDirective,
-      },
-      resolvers: {
-        Query,
-        Mutation,
-      },
+      schema,
       context: ({ request, response }) => {
         return { request, response, db: connection };
       },

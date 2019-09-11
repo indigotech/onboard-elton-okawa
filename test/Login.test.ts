@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 
 import { requestGraphQL } from 'test/requestGraphQL';
 import * as ErrorMessages from 'src/ErrorMessages';
-import { UserEntity } from 'src/entity/User.entity';
+import { User } from 'src/entity/User.entity';
 import { addDummyUserOnDb } from 'test/addDummyUserOnDb';
 
 describe('Login', function() {
@@ -36,7 +36,7 @@ describe('Login', function() {
   };
 
   before(function() {
-    this.userRepository = getRepository(UserEntity);
+    this.userRepository = getRepository(User);
   });
 
   beforeEach(async function() {

@@ -1,25 +1,54 @@
-import { UserEntity } from 'src/entity/User.entity';
+import { ObjectType, Field, InputType, Int } from 'type-graphql';
 
-export interface AuthPayload {
-  user: UserEntity;
+import { User } from 'src/entity/User.entity';
+
+@ObjectType()
+export class AuthPayload {
+
+  @Field(type => User)
+  user: User;
+
+  @Field()
   token: string;
 }
 
-export interface CreateUserInput {
+@InputType()
+export class CreateUserInput {
+  @Field()
   name: string;
+
+  @Field()
   password: string;
+
+  @Field()
   email: string;
+
+  @Field()
   birthDate: string;
+
+  @Field()
   cpf: string;
 }
 
-export interface UserPage {
-  totalCount: number;
-  users: UserEntity[];
-  pageInfo: PageInfo;
+@ObjectType()
+export class PageInfo {
+
+  @Field()
+  hasPreviousPage: boolean;
+
+  @Field()
+  hasNextPage: boolean;
 }
 
-export interface PageInfo {
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
+@ObjectType()
+export class UserPage {
+
+  @Field(type => Int)
+  totalCount: number;
+
+  @Field(type => [User])
+  users: User[];
+
+  @Field(type => PageInfo)
+  pageInfo: PageInfo;
 }

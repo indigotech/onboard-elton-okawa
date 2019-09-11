@@ -3,24 +3,24 @@ import * as faker from 'faker';
 import * as cpf from 'cpf';
 import { getRepository } from 'typeorm';
 
-import { UserEntity } from "src/entity/User.entity";
+import { User } from "src/entity/User.entity";
 
-export const addDummyUserOnDb = async (): Promise<UserEntity> => {
-  const newUser: UserEntity = getDummyUser();
-  return getRepository(UserEntity).save(newUser);
+export const addDummyUserOnDb = async (): Promise<User> => {
+  const newUser: User = getDummyUser();
+  return getRepository(User).save(newUser);
 };
 
-export const addManyDummyUsersOnDb = async (numberOfUsers: number): Promise<UserEntity[]> => {
-  const users: UserEntity[] = [];
+export const addManyDummyUsersOnDb = async (numberOfUsers: number): Promise<User[]> => {
+  const users: User[] = [];
   for (let i = 0; i < numberOfUsers; i++) {
     users.push(getDummyUser());
   }
 
-  return getRepository(UserEntity).save(users);
+  return getRepository(User).save(users);
 }
 
-const getDummyUser = (): UserEntity => {
-  const newUser: UserEntity = new UserEntity();
+const getDummyUser = (): User => {
+  const newUser: User = new User();
   newUser.name = faker.name.findName();
   newUser.email = faker.internet.email();
   newUser.birthDate = faker.date.past();

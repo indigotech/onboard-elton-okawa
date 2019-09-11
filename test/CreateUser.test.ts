@@ -7,14 +7,14 @@ import gql from 'graphql-tag';
 
 import * as ErrorMessages from 'src/ErrorMessages';
 import { requestGraphQL, requestGraphQLWithToken } from 'test/requestGraphQL';
-import { UserEntity } from "src/entity/User.entity";
+import { User } from "src/entity/User.entity";
 import { addDummyUserOnDb } from "test/addDummyUserOnDb";
 import { APP_SECRET } from 'src/utils';
 
 describe('CreateUser', function() {
   const ONE_MINUTE = 60;
 
-  let newUser = new UserEntity();
+  let newUser = new User();
   newUser.name = "Another User";
   newUser.email = "newemail@email.com";
   newUser.cpf = "10020030040012";
@@ -36,13 +36,13 @@ describe('CreateUser', function() {
       }}`;
   };
 ``
-  const requestCreateUserMutationWithToken = (userEntity: UserEntity, token: string) => {
+  const requestCreateUserMutationWithToken = (userEntity: User, token: string) => {
     const query = getCreateUserMutation();
     const user = { ...userEntity, id: undefined }; 
     return requestGraphQLWithToken(this.ctx.request, { query, variables: { user }}, token);
   };
 
-  const requestCreateUserMutation = (userEntity: UserEntity) => {
+  const requestCreateUserMutation = (userEntity: User) => {
     const query = getCreateUserMutation();
     const user = { ...userEntity, id: undefined };
     return requestGraphQL(this.ctx.request, { query, variables: { user }});
@@ -59,7 +59,7 @@ describe('CreateUser', function() {
   }
 
   before(function() {
-    this.userRepository = getRepository(UserEntity);
+    this.userRepository = getRepository(User);
   });
 
   beforeEach(async function() {
@@ -73,7 +73,7 @@ describe('CreateUser', function() {
 
   it('should authorize and create user', async function() {
     const res = await requestCreateUserMutationWithToken(newUser, correctToken);
-
+    
     const { id, name, cpf, email, birthDate } = res.body.data.CreateUser;
     expect(id).to.not.be.empty;
     expect(name).to.be.equals(newUser.name);

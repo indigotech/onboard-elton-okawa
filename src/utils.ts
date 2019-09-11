@@ -5,6 +5,7 @@ import { AuthPayload } from 'src/resolvers/types';
 import { DetailedError } from 'src/DetailedError';
 import { SchemaDirectiveVisitor } from 'graphql-tools';
 import { defaultFieldResolver } from 'graphql';
+import { AuthChecker } from 'type-graphql';
 
 export const APP_SECRET = '$UP3R S3CR3T';
 
@@ -34,17 +35,10 @@ export const getTokenPayload = (authorization: string): AuthPayload => {
   return jwt.verify(token, APP_SECRET) as AuthPayload;
 }
 
-export class IsAuthDirective extends SchemaDirectiveVisitor {
+export const authChecker: AuthChecker<{ request, response }> = ({ root, args, context, info }, roles ) => {
+  const { request, response } = context;
+  const authorization = request.get('Authorization');
+  verifyAuthToken(authorization, response);
 
-  visitFieldDefinition(field) {
-    const { resolve = defaultFieldResolver } = field;
-    field.resolve = async function(parent, args, context, info) {
-      const { request, response } = context;
-      const authorization = request.get('Authorization');
-      verifyAuthToken(authorization, response);
-
-      const result = await resolve.apply(this, [parent, args, context, info]);
-      return result;
-    };
-  }
+  return true;
 }

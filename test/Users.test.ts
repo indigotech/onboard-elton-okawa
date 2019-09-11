@@ -5,7 +5,7 @@ import { expect } from 'chai';
 
 import * as ErrorMessages from 'src/ErrorMessages';
 import { requestGraphQL, requestGraphQLWithToken } from 'test/requestGraphQL';
-import { UserEntity } from "src/entity/User.entity";
+import { User } from "src/entity/User.entity";
 import { addManyDummyUsersOnDb } from "test/addDummyUserOnDb";
 import { APP_SECRET } from 'src/utils';
 
@@ -48,7 +48,7 @@ describe('Users', function() {
   };
 
   before(function() {
-    this.userRepository = getRepository(UserEntity);
+    this.userRepository = getRepository(User);
   });
 
   beforeEach(async function() {
