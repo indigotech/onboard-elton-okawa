@@ -2,47 +2,26 @@ import * as jwt from 'jsonwebtoken';
 import * as bcryptjs from 'bcryptjs';
 import * as HttpStatusCode from 'http-status-codes';
 
-import * as ErrorMessages from '../../ErrorMessages';
-import { CreateUserInput, AuthPayload } from "../types";
-import { APP_SECRET } from '../../utils';
-import { User } from '../../entity/User';
-import { DetailedError } from '../../DetailedError';
-import { ErrorPack } from '../../ErrorPack';
+import * as ErrorMessages from 'src/ErrorMessages';
+import { verifyAuthToken } from 'src/utils';
+import { UserEntity } from 'src/entity/User.entity';
+import { DetailedError } from 'src/DetailedError';
+import { ErrorPack } from 'src/ErrorPack';
 
-export const CreateUser = async (_, { user }, { request, response, db }): Promise<User> => {
-  const authorization = request.get('Authorization');
-  if (authorization) {
-    const token = authorization.replace('Bearer ', '');
-    let payload;
-    try {
-      payload = jwt.verify(token, APP_SECRET) as AuthPayload;
-      
-    } catch (error) {
-      response.statusCode = HttpStatusCode.UNAUTHORIZED;
-      throw error;
-    }
-    if (!payload.userId) {
-      response.statusCode = HttpStatusCode.BAD_REQUEST;
-      throw new DetailedError(ErrorMessages.MALFORMED_TOKEN_PAYLOAD);
-    }
-
-    let errors: DetailedError[] = verifyPassword(user.password);
-    const isEmailUnique = !(await db.manager.findOne(User, { email: user.email }));
-    if (!isEmailUnique) {
-      errors.push(new DetailedError(ErrorMessages.EMAIL_ALREADY_USED));
-    }
-    
-    if (errors.length > 0) {
-      response.statusCode = HttpStatusCode.BAD_REQUEST;
-      throw new ErrorPack(ErrorMessages.VALIDATION_ERRORS, errors);
-    }
-
-    const salt = bcryptjs.genSaltSync(10);
-    return db.manager.save(User, { ...user, password: bcryptjs.hashSync(user.password, salt) });
+export const CreateUser = async (_, { user }, { request, response, db }): Promise<UserEntity> => {
+  let errors: DetailedError[] = verifyPassword(user.password);
+  const isEmailUnique = !(await db.manager.findOne(UserEntity, { email: user.email }));
+  if (!isEmailUnique) {
+    errors.push(new DetailedError('Email already used'));
   }
   
-  response.statusCode = HttpStatusCode.UNAUTHORIZED;
-  throw new DetailedError(ErrorMessages.MISSING_AUTH_HEADER);
+  if (errors.length > 0) {
+    response.statusCode = HttpStatusCode.BAD_REQUEST;
+    throw new ErrorPack('Validation errors', errors);
+  }
+
+  const salt = bcryptjs.genSaltSync(10);
+  return db.manager.save(UserEntity, { ...user, password: bcryptjs.hashSync(user.password, salt) });
 }
 
 const verifyPassword = (password: string): DetailedError[] => {

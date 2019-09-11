@@ -1,10 +1,13 @@
+directive @isAuth on FIELD_DEFINITION
+
 type Query {
   Hello(name: String): String!
+  User(id: ID!): User @isAuth
 }
 
 type Mutation {
   Login(email: String!, password: String!, rememberMe: Boolean): AuthPayload!
-  CreateUser(user: CreateUserInput!): User!
+  CreateUser(user: CreateUserInput!): User! @isAuth
 }
 
 type AuthPayload {

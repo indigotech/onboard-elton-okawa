@@ -1,7 +1,7 @@
-import { User } from '../entity/User';
+import { UserEntity } from '../entity/User.entity';
 
 export interface AuthPayload {
-  user: User;
+  user: UserEntity;
   token: string;
 }
 

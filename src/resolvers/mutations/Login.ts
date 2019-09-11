@@ -4,11 +4,11 @@ import * as HttpStatus from 'http-status-codes';
 
 import * as ErrorMessages from '../../ErrorMessages';
 import { APP_SECRET } from '../../utils';
-import { User } from '../../entity/User';
+import { UserEntity } from '../../entity/User.entity';
 import { AuthPayload } from '../types';
 
 export const Login = async (_, { email, password, rememberMe}, { response, db }): Promise<AuthPayload> => {
-  const user: User = await db.manager.findOne(User, { email });
+  const user: UserEntity = await db.manager.findOne(UserEntity, { email });
   if (!user) { 
     response.statusCode = HttpStatus.NOT_FOUND;
     throw Error(ErrorMessages.EMAIL_NOT_FOUND); 

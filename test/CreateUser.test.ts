@@ -5,14 +5,14 @@ import { getRepository } from "typeorm";
 import { expect } from 'chai';
 
 import * as ErrorMessages from '../src/ErrorMessages';
-import { User } from "../src/entity/User";
+import { UserEntity } from "../src/entity/User.entity";
 import { addDummyUserOnDb } from "./addDummyUserOnDb";
 import { APP_SECRET } from '../src/utils';
 
 describe('CreateUser', function() {
   const ONE_MINUTE = 60;
 
-  let newUser = new User();
+  let newUser = new UserEntity();
   newUser.name = "Another User";
   newUser.email = "newemail@email.com";
   newUser.cpf = "10020030040012";
@@ -22,7 +22,7 @@ describe('CreateUser', function() {
   let savedUser;
   let correctToken;
 
-  const requestCreateUserMutation = async (user: User, token: string) => {
+  const requestCreateUserMutation = async (user: UserEntity, token: string) => {
     const { request } = this.ctx;
     return request.post('/').send({
       query: `mutation { \
@@ -43,7 +43,7 @@ describe('CreateUser', function() {
   }
 
   before(function() {
-    this.userRepository = getRepository(User);
+    this.userRepository = getRepository(UserEntity);
   });
 
   beforeEach(async function() {
@@ -65,7 +65,7 @@ describe('CreateUser', function() {
     expect(email).to.be.equals(newUser.email);
     expect(new Date(birthDate).getTime()).to.be.equals(newUser.birthDate.getTime());
 
-    const dbUser = await this.userRepository.findOne({ id });
+    const dbUser = await this.userRepository.findOne(id);
     expect(dbUser.name).to.be.equals(newUser.name);
     expect(dbUser.cpf).to.be.equals(newUser.cpf);
     expect(dbUser.email).to.be.equals(newUser.email);
