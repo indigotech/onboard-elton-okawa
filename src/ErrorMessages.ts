@@ -9,3 +9,5 @@ export const PASSWORD_WITHOUT_LETTER = 'Password does not have letter';
 export const PASSWORD_MINIMUM_SIZE = 'Password does not have minimum size';
 export const EMAIL_NOT_FOUND = 'Email not found in database';
 export const INVALID_CREDENTIALS = 'Invalid credentials, please check your e-mail and password';
+export const LIMIT_NEGATIVE = 'LIMIT must not be negative';
+export const OFFSET_NEGATIVE = 'OFFSET must not be negative';
