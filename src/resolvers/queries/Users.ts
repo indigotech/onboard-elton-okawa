@@ -18,8 +18,7 @@ export class UsersResolver {
     const usersPerPage = limit || DEFAULT_LIMIT;
     const offsetUsers = offset || 0;
     const userRepository = getRepository(User);
-    const users = await userRepository.find({ order: { name: "ASC" }, take: usersPerPage, skip: offsetUsers });
-    const totalCount = await userRepository.count();
+    const [ users, totalCount ] = await userRepository.findAndCount({ order: { name: "ASC" }, take: usersPerPage, skip: offsetUsers });
   
     const pageInfo: PageInfo = { 
       hasPreviousPage: offsetUsers > 0 && totalCount > 0, 
