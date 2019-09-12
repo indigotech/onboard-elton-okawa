@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import { requestGraphQL, requestGraphQLWithToken } from 'test/requestGraphQL';
 import { addDummyUserOnDb } from "test/addDummyUserOnDb";
 import { APP_SECRET } from "src/utils";
-import { UserEntity } from 'src/entity/User.entity';
+import { User } from 'src/entity/User.entity';
 
 describe('User', function() {
   const ONE_MINUTE = 60;
@@ -39,7 +39,7 @@ describe('User', function() {
   };
 
   before(function() {
-    this.userRepository = getRepository(UserEntity);
+    this.userRepository = getRepository(User);
   });
 
   beforeEach(async function() {
@@ -58,7 +58,7 @@ describe('User', function() {
     expect(+id).to.be.equals(savedUser.id);
     expect(name).to.be.equals(savedUser.name);
     expect(email).to.be.equals(savedUser.email);
-    expect(+birthDate).to.be.equals(new Date(savedUser.birthDate).getTime());
+    expect(+birthDate).to.be.equals(savedUser.birthDate.getTime());
     expect(cpf).to.be.equals(savedUser.cpf);
     expect(password).to.be.undefined;
   });
@@ -87,7 +87,7 @@ describe('User', function() {
 
   it('should not return user because of missing auth header', async function() {
     const res = await requestUserQuery(savedUser.id);
-
+    
     const { errors } = res.body;
     expect(errors).to.not.be.empty;
     expect(res.statusCode).to.be.equals(HttpStatusCodes.UNAUTHORIZED);

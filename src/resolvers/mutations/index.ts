@@ -1,7 +1,7 @@
-import { Login } from 'src/resolvers/mutations/Login';
-import { CreateUser } from 'src/resolvers/mutations/CreateUser';
+import { LoginResolver } from 'src/resolvers/mutations/Login';
+import { CreateUserResolver } from 'src/resolvers/mutations/CreateUser';
 
-export default {
-  Login,
-  CreateUser,
-}
+export default [
+  LoginResolver,
+  CreateUserResolver,
+]

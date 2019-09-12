@@ -1,19 +1,28 @@
 import { getRepository } from "typeorm";
+import { Resolver, Query, Arg, Int, Authorized } from "type-graphql";
 
-import { UserEntity } from "src/entity/User.entity";
+import { User } from "src/entity/User.entity";
 import { UserPage, PageInfo } from "src/resolvers/types";
 
 const DEFAULT_LIMIT = 5
 
-export const Users = async (_, { limit, offset }): Promise<UserPage> => {
-  const usersPerPage = limit || DEFAULT_LIMIT;
-  const offsetUsers = offset || 0;
-  const userRepository = getRepository(UserEntity);
-  const users = await userRepository.find({ order: { name: "ASC" }, take: usersPerPage, skip: offsetUsers });
-  const totalCount = await userRepository.count();
+@Resolver()
+export class UsersResolver {
 
-  const pageInfo: PageInfo = { 
-    hasPreviousPage: offsetUsers > 0 && totalCount > 0, 
-    hasNextPage: totalCount - (usersPerPage + offsetUsers) > 0 };
-  return { users, totalCount, pageInfo };
-};
+  @Authorized()
+  @Query(returns => UserPage)
+  async Users(
+    @Arg("limit", type => Int, { nullable: true }) limit: number,
+    @Arg("offset", type => Int, { nullable: true }) offset: number) {
+
+    const usersPerPage = limit || DEFAULT_LIMIT;
+    const offsetUsers = offset || 0;
+    const userRepository = getRepository(User);
+    const [ users, totalCount ] = await userRepository.findAndCount({ order: { name: "ASC" }, take: usersPerPage, skip: offsetUsers });
+  
+    const pageInfo: PageInfo = { 
+      hasPreviousPage: offsetUsers > 0 && totalCount > 0, 
+      hasNextPage: totalCount - (usersPerPage + offsetUsers) > 0 };
+    return { users, totalCount, pageInfo };
+  }
+}

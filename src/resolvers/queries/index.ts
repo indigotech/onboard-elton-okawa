@@ -1,9 +1,9 @@
-import { Hello } from 'src/resolvers/queries/Hello';
-import { User } from 'src/resolvers/queries/User';
-import { Users } from 'src/resolvers/queries/Users';
+import { HelloResolver } from 'src/resolvers/queries/Hello';
+import { UserResolver } from 'src/resolvers/queries/User';
+import { UsersResolver } from 'src/resolvers/queries/Users';
 
-export default { 
-  Hello,
-  User,
-  Users,
-}
+export default [ 
+  HelloResolver,
+  UserResolver,
+  UsersResolver,
+];

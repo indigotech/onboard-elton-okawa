@@ -1,6 +1,14 @@
-import { UserEntity } from 'src/entity/User.entity';
 import { getRepository } from 'typeorm';
+import { Resolver, Arg, Query, ID, Authorized} from 'type-graphql';
 
-export const User = (_, { id }, { request, response }): Promise<UserEntity> => {
-  return getRepository(UserEntity).findOne(id);
-};
+import { User } from 'src/entity/User.entity';
+
+@Resolver(User)
+export class UserResolver {
+
+  @Authorized()
+  @Query(returns => User, { nullable: true })
+  User(@Arg("id", returns => ID) id: number): Promise<User> {
+    return getRepository(User).findOne(id);
+  }
+}
